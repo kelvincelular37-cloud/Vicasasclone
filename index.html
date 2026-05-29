@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MGrepair — Soluciones Tecnológicas Integrales</title>
+
+  <!-- Google Fonts: Syne (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <!-- Remix Icons CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS & RESET
+    ============================================================ */
+    :root {
+      --bg-void:        #08090c;
+      --bg-deep:        #0d0f14;
+      --bg-surface:     #13161e;
+      --bg-card:        #181c27;
+      --bg-card-hover:  #1e2333;
+
+      --border-subtle:  rgba(255,255,255,0.06);
+      --border-glow:    rgba(0,200,255,0.3);
+
+      --text-white:     #f0f2f8;
+      --text-muted:     #7c8499;
+      --text-dim:       #4a5168;
+
+      --cyan:           #00c8ff;
+      --cyan-dim:       rgba(0,200,255,0.12);
+      --cyan-glow:      rgba(0,200,255,0.35);
+      --orange:         #ff6b35;
+      --orange-dim:     rgba(255,107,53,0.12);
+      --orange-glow:    rgba(255,107,53,0.35);
+      --green-wa:       #25d366;
+      --green-wa-dim:   rgba(37,211,102,0.15);
+      --green-wa-glow:  rgba(37,211,102,0.4);
+
+      --radius-sm:  8px;
+      --radius-md:  14px;
+      --radius-lg:  22px;
+      --radius-xl:  32px;
+
+      --font-display: 'Syne', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-void);
+      color: var(--text-white);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { max-width: 100%; display: block; }
+    a   { text-decoration: none; color: inherit; }
+
+    /* ============================================================
+       SCROLLBAR
+    ============================================================ */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg-void); }
+    ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 10px; }
+
+    /* ============================================================
+       REUSABLE UTILITIES
+    ============================================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section { padding: 100px 0; }
+    .section--alt { background: var(--bg-deep); }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 1px solid;
+    }
+    .tag--cyan  { color: var(--cyan);   background: var(--cyan-dim);   border-color: var(--border-glow); }
+    .tag--orange{ color: var(--orange); background: var(--orange-dim); border-color: rgba(255,107,53,0.3); }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin: 18px 0 14px;
+    }
+
+    .section-sub {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 540px;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    .highlight-cyan   { color: var(--cyan); }
+    .highlight-orange { color: var(--orange); }
+
+    /* ============================================================
+       GRID NOISE BACKGROUND TEXTURE
+    ============================================================ */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       NAVBAR
+    ============================================================ */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 999;
+      padding: 18px 0;
+      background: rgba(8,9,12,0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      transition: var(--transition);
+    }
+
+    .navbar__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .navbar__logo {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .navbar__logo span { color: var(--cyan); }
+
+    .navbar__logo-dot {
+      width: 8px; height: 8px;
+      background: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--cyan);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .navbar__nav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .navbar__nav a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color var(--transition);
+    }
+    .navbar__nav a:hover { color: var(--text-white); }
+
+    .navbar__cta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--green-wa-dim);
+      border: 1px solid var(--green-wa);
+      border-radius: 100px;
+      color: var(--green-wa);
+      font-size: 14px;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    .navbar__cta:hover {
+      background: var(--green-wa);
+      color: #fff;
+      box-shadow: 0 0 24px var(--green-wa-glow);
+    }
+
+    .navbar__hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .navbar__hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--text-white);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+
+    /* ============================================================
+       HERO SECTION
+    ============================================================ */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: var(--bg-void);
+    }
+
+    /* Radial glow behind hero text */
+    .hero__glow {
+      position: absolute;
+      width: 900px; height: 900px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,200,255,0.07) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -55%);
+      pointer-events: none;
+    }
+
+    /* Orange accent glow bottom-right */
+    .hero__glow2 {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,107,53,0.06) 0%, transparent 70%);
+      bottom: 0; right: -100px;
+      pointer-events: none;
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      max-width: 820px;
+    }
+
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 18px;
+      background: rgba(0,200,255,0.06);
+      border: 1px solid rgba(0,200,255,0.2);
+      border-radius: 100px;
+      font-size: 13px;
+      color: var(--cyan);
+      font-weight: 500;
+      margin-bottom: 32px;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero__badge i { font-size: 15px; }
+
+    .hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(38px, 7vw, 80px);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      margin-bottom: 28px;
+      animation: fadeUp 0.8s 0.15s ease both;
+    }
+
+    .hero__title .line-cyan {
+      color: var(--cyan);
+      text-shadow: 0 0 60px rgba(0,200,255,0.4);
+    }
+    .hero__title .line-orange {
+      color: var(--orange);
+      text-shadow: 0 0 60px rgba(255,107,53,0.35);
+    }
+
+    .hero__sub {
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--text-muted);
+      max-width: 600px;
+      line-height: 1.75;
+      font-weight: 300;
+      margin-bottom: 48px;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .hero__actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s 0.45s ease both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 32px;
+      background: var(--green-wa);
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 0 30px var(--green-wa-glow), 0 4px 20px rgba(0,0,0,0.4);
+      letter-spacing: 0.01em;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 50px var(--green-wa-glow), 0 12px 30px rgba(0,0,0,0.5);
+    }
+    .btn-primary i { font-size: 20px; }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 15px 28px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 15px;
+      font-weight: 500;
+      border-radius: 100px;
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-ghost:hover {
+      border-color: rgba(255,255,255,0.2);
+      color: var(--text-white);
+    }
+
+    .hero__stats {
+      display: flex;
+      gap: 48px;
+      margin-top: 72px;
+      padding-top: 48px;
+      border-top: 1px solid var(--border-subtle);
+      animation: fadeUp 0.8s 0.6s ease both;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+
+    .hero__stat-num {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .hero__stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       SERVICES GRID — SHARED CARDS
+    ============================================================ */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-top: 56px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 28px 24px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity var(--transition);
+      border-radius: inherit;
+    }
+    .card--cyan::before  { background: radial-gradient(circle at 30% 20%, var(--cyan-dim), transparent 70%); }
+    .card--orange::before{ background: radial-gradient(circle at 30% 20%, var(--orange-dim), transparent 70%); }
+
+    .card:hover {
+      background: var(--bg-card-hover);
+      transform: translateY(-4px);
+    }
+    .card:hover::before { opacity: 1; }
+    .card--cyan:hover  { border-color: rgba(0,200,255,0.25);  box-shadow: 0 8px 32px rgba(0,200,255,0.08); }
+    .card--orange:hover{ border-color: rgba(255,107,53,0.25); box-shadow: 0 8px 32px rgba(255,107,53,0.08); }
+
+    .card__icon {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 18px;
+    }
+    .card__icon--cyan   { background: var(--cyan-dim);   color: var(--cyan); }
+    .card__icon--orange { background: var(--orange-dim); color: var(--orange); }
+
+    .card__title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .card__desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    /* ============================================================
+       TRUST STRIP
+    ============================================================ */
+    .trust-strip {
+      display: flex;
+      gap: 12px;
+      margin-top: 56px;
+      flex-wrap: wrap;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .trust-item i { color: var(--cyan); font-size: 16px; }
+    .trust-item:hover { border-color: rgba(0,200,255,0.2); color: var(--text-white); }
+
+    /* ============================================================
+       SECTION LAYOUT (two-column header)
+    ============================================================ */
+    .section-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+    .section-header--full { grid-template-columns: 1fr; }
+
+    /* ============================================================
+       WEB DEV SECTION — FEATURE LIST
+    ============================================================ */
+    .web-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      margin-top: 64px;
+      align-items: start;
+    }
+
+    .benefit-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .benefit-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .benefit-item__icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--orange-dim);
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .benefit-item__text h4 {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .benefit-item__text p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    /* Terminal mockup */
+    .terminal {
+      background: #0b0d12;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .terminal__bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      background: #13151c;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .terminal__dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+    .terminal__dot:nth-child(1) { background: #ff5f57; }
+    .terminal__dot:nth-child(2) { background: #febc2e; }
+    .terminal__dot:nth-child(3) { background: #28c840; }
+    .terminal__title {
+      margin-left: 8px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .terminal__body {
+      padding: 24px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 2;
+    }
+    .t-dim    { color: var(--text-dim); }
+    .t-cyan   { color: var(--cyan); }
+    .t-orange { color: var(--orange); }
+    .t-green  { color: var(--green-wa); }
+    .t-white  { color: var(--text-white); }
+
+    /* Blinking cursor */
+    .cursor {
+      display: inline-block;
+      width: 8px; height: 14px;
+      background: var(--cyan);
+      vertical-align: middle;
+      animation: blink 1s step-start infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* ============================================================
+       PROCESS STRIP
+    ============================================================ */
+    .process-strip {
+      display: flex;
+      gap: 0;
+      margin-top: 64px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .process-step {
+      flex: 1;
+      padding: 28px 24px;
+      position: relative;
+      text-align: center;
+    }
+    .process-step + .process-step {
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .process-step__num {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--orange);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .process-step__title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .process-step__desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ============================================================
+       CTA FINAL SECTION
+    ============================================================ */
+    .cta-section {
+      position: relative;
+      padding: 120px 0;
+      text-align: center;
+      overflow: hidden;
+      background: var(--bg-void);
+    }
+
+    .cta-section__glow {
+      position: absolute;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37,211,102,0.07) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .cta-section__inner {
+      position: relative;
+      z-index: 2;
+    }
+
+    .cta-section__title {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 6vw, 68px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin: 20px 0 24px;
+    }
+
+    .cta-section__sub {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto 48px;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    .btn-wa-big {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 20px 48px;
+      background: var(--green-wa);
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 0 60px var(--green-wa-glow), 0 8px 32px rgba(0,0,0,0.5);
+      letter-spacing: 0.01em;
+    }
+    .btn-wa-big i { font-size: 26px; }
+    .btn-wa-big:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 0 90px var(--green-wa-glow), 0 16px 48px rgba(0,0,0,0.6);
+    }
+
+    .cta-section__note {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .cta-section__note i { color: var(--green-wa); vertical-align: middle; margin-right: 4px; }
+
+    /* ============================================================
+       FLOATING WHATSAPP BUTTON
+    ============================================================ */
+    .wa-float {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 998;
+      width: 58px; height: 58px;
+      background: var(--green-wa);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #fff;
+      box-shadow: 0 0 30px var(--green-wa-glow), 0 4px 20px rgba(0,0,0,0.4);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .wa-float:hover {
+      transform: scale(1.12);
+      box-shadow: 0 0 50px var(--green-wa-glow), 0 8px 30px rgba(0,0,0,0.5);
+    }
+    .wa-float__ring {
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid var(--green-wa);
+      animation: ring-pulse 2s ease-out infinite;
+      opacity: 0;
+    }
+    @keyframes ring-pulse {
+      0%   { transform: scale(1);    opacity: 0.7; }
+      100% { transform: scale(1.5);  opacity: 0; }
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    .footer {
+      padding: 48px 0 32px;
+      background: var(--bg-deep);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .footer__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer__logo {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .footer__logo span { color: var(--cyan); }
+    .footer__copy {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .footer__links {
+      display: flex;
+      gap: 24px;
+    }
+    .footer__links a {
+      font-size: 13px;
+      color: var(--text-dim);
+      transition: color var(--transition);
+    }
+    .footer__links a:hover { color: var(--text-white); }
+
+    /* ============================================================
+       DIVIDER
+    ============================================================ */
+    .divider {
+      width: 48px; height: 3px;
+      border-radius: 2px;
+      margin-bottom: 12px;
+    }
+    .divider--cyan   { background: var(--cyan); }
+    .divider--orange { background: var(--orange); }
+
+    /* ============================================================
+       ANIMATIONS
+    ============================================================ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Intersection observer classes */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 900px) {
+      .section-header { grid-template-columns: 1fr; }
+      .web-layout      { grid-template-columns: 1fr; gap: 40px; }
+      .process-strip   { flex-direction: column; }
+      .process-step + .process-step { border-left: none; border-top: 1px solid var(--border-subtle); }
+      .hero__stats     { gap: 32px; }
+    }
+
+    @media (max-width: 768px) {
+      .section { padding: 72px 0; }
+      .navbar__nav { display: none; }
+      .navbar__hamburger { display: flex; }
+
+      .cards-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .footer__inner {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .hero__actions { flex-direction: column; align-items: flex-start; }
+      .trust-strip { flex-direction: column; }
+      .btn-wa-big { padding: 18px 32px; font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================
+       FLOATING WHATSAPP BUTTON
+  ========================================================= -->
+  <a href="https://wa.me/573000000000?text=Hola%2C%20quiero%20cotizar%20un%20servicio%20de%20MGrepair"
+     target="_blank"
+     rel="noopener noreferrer"
+     class="wa-float"
+     aria-label="Contactar por WhatsApp">
+    <div class="wa-float__ring"></div>
+    <i class="ri-whatsapp-line"></i>
+  </a>
+
+
+  <!-- =========================================================
+       NAVBAR
+  ========================================================= -->
+  <header class="navbar" id="navbar">
+    <div class="container navbar__inner">
+
+      <div class="navbar__logo">
+        <div class="navbar__logo-dot"></div>
+        MG<span>repair</span>
+      </div>
+
+      <nav>
+        <ul class="navbar__nav">
+          <li><a href="#serviciotecnico">Servicio Técnico</a></li>
+          <li><a href="#desarrolloweb">Desarrollo Web</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </nav>
+
+      <a href="https://wa.me/573000000000?text=Hola%2C%20quiero%20cotizar%20un%20servicio%20de%20MGrepair"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="navbar__cta">
+        <i class="ri-whatsapp-line"></i>
+        WhatsApp
+      </a>
+
+      <!-- Mobile hamburger (functional via JS below) -->
+      <div class="navbar__hamburger" id="hamburger" aria-label="Menú móvil">
+        <span></span><span></span><span></span>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- =========================================================
+       HERO
+  ========================================================= -->
+  <section class="hero" id="inicio">
+    <div class="grid-bg"></div>
+    <div class="hero__glow"></div>
+    <div class="hero__glow2"></div>
+
+    <div class="container">
+      <div class="hero__content">
+
+        <div class="hero__badge">
+          <i class="ri-cpu-line"></i>
+          Soluciones tecnológicas integrales · Colombia
+        </div>
+
+        <h1 class="hero__title">
+          Reparamos<br/>
+          <span class="line-cyan">tus dispositivos.</span><br/>
+          Digitalizamos<br/>
+          <span class="line-orange">tu negocio.</span>
+        </h1>
+
+        <p class="hero__sub">
+          Desde la pantalla rota de tu celular hasta la página web que convierte visitantes en clientes.
+          MGrepair es la única solución tecnológica que necesitas, bajo el mismo techo.
+        </p>
+
+        <div class="hero__actions">
+          <a href="https://wa.me/573000000000?text=Hola%2C%20quiero%20una%20cotizaci%C3%B3n%20con%20MGrepair"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="btn-primary">
+            <i class="ri-whatsapp-line"></i>
+            Cotizar por WhatsApp
+          </a>
+          <a href="#serviciotecnico" class="btn-ghost">
+            Ver servicios <i class="ri-arrow-down-line"></i>
+          </a>
+        </div>
+
+        <div class="hero__stats">
+          <div>
+            <div class="hero__stat-num highlight-cyan">500+</div>
+            <div class="hero__stat-label">Dispositivos reparados</div>
+          </div>
+          <div>
+            <div class="hero__stat-num highlight-orange">50+</div>
+            <div class="hero__stat-label">Páginas web entregadas</div>
+          </div>
+          <div>
+            <div class="hero__stat-num highlight-cyan">98%</div>
+            <div class="hero__stat-label">Clientes satisfechos</div>
+          </div>
+          <div>
+            <div class="hero__stat-num" style="color:var(--green-wa)">24h</div>
+            <div class="hero__stat-label">Tiempo promedio de entrega</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================================
+       SECCIÓN 1 — SERVICIO TÉCNICO
+  ========================================================= -->
+  <section class="section section--alt" id="serviciotecnico">
+    <div class="container">
+
+      <div class="section-header">
+        <div class="reveal">
+          <div class="tag tag--cyan"><i class="ri-tools-line"></i> Servicio Técnico</div>
+          <h2 class="section-title">
+            Tus dispositivos,<br/>
+            <span class="highlight-cyan">en manos expertas.</span>
+          </h2>
+        </div>
+        <div class="reveal reveal-delay-1">
+          <p class="section-sub" style="margin-top: 72px;">
+            Diagnóstico profesional, repuestos originales y garantía real. 
+            No improvisamos: cada reparación pasa por nuestro protocolo de calidad antes de llegar a tus manos.
+          </p>
+        </div>
+      </div>
+
+      <!-- Cards grid -->
+      <div class="cards-grid">
+
+        <div class="card card--cyan reveal">
+          <div class="card__icon card__icon--cyan"><i class="ri-smartphone-line"></i></div>
+          <h3 class="card__title">Cambio de Pantallas</h3>
+          <p class="card__desc">Remplazamos tu pantalla rota con displays de primera calidad. Colores reales, sensibilidad táctil perfecta y garantía incluida.</p>
+        </div>
+
+        <div class="card card--cyan reveal reveal-delay-1">
+          <div class="card__icon card__icon--cyan"><i class="ri-battery-charge-line"></i></div>
+          <h3 class="card__title">Cambio de Baterías</h3>
+          <p class="card__desc">¿Tu celular no aguanta el día? Instalamos baterías certificadas que restauran la autonomía original de tu dispositivo.</p>
+        </div>
+
+        <div class="card card--cyan reveal reveal-delay-2">
+          <div class="card__icon card__icon--cyan"><i class="ri-computer-line"></i></div>
+          <h3 class="card__title">Reparación de Computadores</h3>
+          <p class="card__desc">Laptop lenta, sin arrancar o con pantalla dañada. Solucionamos fallas de hardware y software en PC, Mac y portátiles.</p>
+        </div>
+
+        <div class="card card--cyan reveal reveal-delay-3">
+          <div class="card__icon card__icon--cyan"><i class="ri-stethoscope-line"></i></div>
+          <h3 class="card__title">Diagnóstico Técnico</h3>
+          <p class="card__desc">Antes de gastar, saber qué tienes. Nuestro diagnóstico integral detecta cada falla con precisión quirúrgica.</p>
+        </div>
+
+        <div class="card card--cyan reveal reveal-delay-4">
+          <div class="card__icon card__icon--cyan"><i class="ri-shield-check-line"></i></div>
+          <h3 class="card__title">Mantenimiento Preventivo</h3>
+          <p class="card__desc">Limpieza profunda, actualización de software y revisión general. Alarga la vida útil de tus equipos y evita costosas averías futuras.</p>
+        </div>
+
+        <div class="card card--cyan reveal reveal-delay-1" style="background: var(--cyan-dim); border-color: rgba(0,200,255,0.2);">
+          <div class="card__icon card__icon--cyan"><i class="ri-flashlight-line"></i></div>
+          <h3 class="card__title">Reparaciones Express</h3>
+          <p class="card__desc">Pantallas y baterías en el mismo día. Porque tu tiempo vale y no puedes esperar semanas para recuperar tu dispositivo.</p>
+        </div>
+
+      </div>
+
+      <!-- Trust strip -->
+      <div class="trust-strip reveal" style="margin-top: 48px;">
+        <div class="trust-item"><i class="ri-shield-star-line"></i> Garantía de 3 a 6 meses</div>
+        <div class="trust-item"><i class="ri-time-line"></i> Entrega en 24 horas</div>
+        <div class="trust-item"><i class="ri-verified-badge-line"></i> Repuestos certificados</div>
+        <div class="trust-item"><i class="ri-secure-payment-line"></i> Sin pago hasta ver resultados</div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- =========================================================
+       SECCIÓN 2 — DESARROLLO WEB & AUTOMATIZACIONES
+  ========================================================= -->
+  <section class="section" id="desarrolloweb">
+    <div class="container">
+
+      <div class="section-header--full reveal">
+        <div class="divider divider--orange"></div>
+        <div class="tag tag--orange"><i class="ri-code-s-slash-line"></i> Desarrollo Web & Automatizaciones</div>
+        <h2 class="section-title" style="max-width: 700px; margin-top: 18px;">
+          Lleva tu negocio al<br/>
+          <span class="highlight-orange">siguiente nivel digital.</span>
+        </h2>
+        <p class="section-sub">
+          Tu próximo cliente ya te está buscando en Google. ¿Va a encontrarte a ti, o a tu competencia?
+          Creamos presencia digital que vende, convierte y trabaja por ti las 24 horas.
+        </p>
+      </div>
+
+      <!-- Cards web services -->
+      <div class="cards-grid" style="margin-top: 48px;">
+
+        <div class="card card--orange reveal">
+          <div class="card__icon card__icon--orange"><i class="ri-global-line"></i></div>
+          <h3 class="card__title">Páginas Web Profesionales</h3>
+          <p class="card__desc">Sitios web modernos, rápidos y posicionados en Google. Diseño único, adaptado a tu marca y a tu público objetivo.</p>
+        </div>
+
+        <div class="card card--orange reveal reveal-delay-1">
+          <div class="card__icon card__icon--orange"><i class="ri-layout-masonry-line"></i></div>
+          <h3 class="card__title">Landing Pages de Alto Impacto</h3>
+          <p class="card__desc">Páginas diseñadas para convertir. Con formularios, botones de WhatsApp y CTAs estratégicos que transforman visitantes en clientes.</p>
+        </div>
+
+        <div class="card card--orange reveal reveal-delay-2">
+          <div class="card__icon card__icon--orange"><i class="ri-robot-line"></i></div>
+          <h3 class="card__title">Automatizaciones Inteligentes</h3>
+          <p class="card__desc">Conecta tu negocio con herramientas como WhatsApp, CRM, facturación e inventario. Trabaja menos, factura más.</p>
+        </div>
+
+        <div class="card card--orange reveal reveal-delay-3">
+          <div class="card__icon card__icon--orange"><i class="ri-store-2-line"></i></div>
+          <h3 class="card__title">Tiendas Online</h3>
+          <p class="card__desc">Vende tus productos las 24 horas. E-commerce integrado con pasarelas de pago, inventario automático y panel de control simple.</p>
+        </div>
+
+        <div class="card card--orange reveal reveal-delay-4">
+          <div class="card__icon card__icon--orange"><i class="ri-search-2-line"></i></div>
+          <h3 class="card__title">SEO & Posicionamiento</h3>
+          <p class="card__desc">Aparecer primero en Google no es suerte, es estrategia. Optimizamos tu sitio para que tus clientes te encuentren antes que a la competencia.</p>
+        </div>
+
+        <div class="card card--orange reveal reveal-delay-2" style="background: var(--orange-dim); border-color: rgba(255,107,53,0.2);">
+          <div class="card__icon card__icon--orange"><i class="ri-bar-chart-line"></i></div>
+          <h3 class="card__title">Analítica & Reportes</h3>
+          <p class="card__desc">Paneles de control con datos reales de tu negocio. Toma decisiones basadas en números, no en suposiciones.</p>
+        </div>
+
+      </div>
+
+      <!-- Two-column: benefits + terminal mockup -->
+      <div class="web-layout">
+
+        <div class="benefit-list reveal">
+          <h3 style="font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: 8px;">
+            ¿Por qué necesitas<br/><span class="highlight-orange">una web que venda?</span>
+          </h3>
+          <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 32px; font-weight: 300;">
+            Una web lenta o anticuada no solo pierde visitas: le regala esos clientes a tu competencia.
+          </p>
+
+          <div class="benefit-item">
+            <div class="benefit-item__icon"><i class="ri-speed-up-line"></i></div>
+            <div class="benefit-item__text">
+              <h4>Velocidad que retiene</h4>
+              <p>El 53% de los usuarios abandona una web que tarda más de 3 segundos. Nuestros sitios cargan en menos de 1.</p>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <div class="benefit-item__icon"><i class="ri-smartphone-line"></i></div>
+            <div class="benefit-item__text">
+              <h4>Diseño para móviles</h4>
+              <p>+70% del tráfico viene de celulares. Cada pixel está pensado para pantallas táctiles desde el primer momento.</p>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <div class="benefit-item__icon"><i class="ri-money-dollar-circle-line"></i></div>
+            <div class="benefit-item__text">
+              <h4>ROI medible y real</h4>
+              <p>Sabrás exactamente cuántos visitantes, cotizaciones y ventas generó tu web. Transparencia total.</p>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <div class="benefit-item__icon"><i class="ri-customer-service-2-line"></i></div>
+            <div class="benefit-item__text">
+              <h4>Soporte post-entrega</h4>
+              <p>No te dejamos solo. Acompañamiento continuo para ajustes, actualizaciones y mejoras en tu sitio.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal visual mockup -->
+        <div class="reveal reveal-delay-2">
+          <div class="terminal">
+            <div class="terminal__bar">
+              <div class="terminal__dot"></div>
+              <div class="terminal__dot"></div>
+              <div class="terminal__dot"></div>
+              <span class="terminal__title">mgrepair-deploy.sh</span>
+            </div>
+            <div class="terminal__body">
+              <div><span class="t-dim">$</span> <span class="t-cyan">npm run build</span></div>
+              <div><span class="t-dim">✓</span> <span class="t-white">Optimizando assets...</span></div>
+              <div><span class="t-dim">✓</span> <span class="t-white">Comprimiendo imágenes</span></div>
+              <div><span class="t-dim">✓</span> <span class="t-white">Minificando CSS/JS</span></div>
+              <div><span class="t-green">✓ Build exitoso — 1.2s</span></div>
+              <div>&nbsp;</div>
+              <div><span class="t-dim">$</span> <span class="t-orange">lighthouse --perf</span></div>
+              <div><span class="t-dim">→</span> <span class="t-white">Performance:</span> <span class="t-green">98/100</span></div>
+              <div><span class="t-dim">→</span> <span class="t-white">SEO:</span>         <span class="t-green">100/100</span></div>
+              <div><span class="t-dim">→</span> <span class="t-white">Accesibilidad:</span><span class="t-green">97/100</span></div>
+              <div>&nbsp;</div>
+              <div><span class="t-dim">$</span> <span class="t-cyan">deploy --prod</span></div>
+              <div><span class="t-green">🚀 Tu sitio está en vivo.</span> <span class="cursor"></span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Process strip -->
+      <div class="process-strip reveal">
+        <div class="process-step">
+          <div class="process-step__num">Paso 01</div>
+          <div class="process-step__title">Briefing & Estrategia</div>
+          <div class="process-step__desc">Entendemos tu negocio, tu competencia y tu cliente ideal antes de escribir una sola línea.</div>
+        </div>
+        <div class="process-step">
+          <div class="process-step__num">Paso 02</div>
+          <div class="process-step__title">Diseño & Prototipo</div>
+          <div class="process-step__desc">Te mostramos cómo se verá tu sitio antes de desarrollarlo. Sin sorpresas al final.</div>
+        </div>
+        <div class="process-step">
+          <div class="process-step__num">Paso 03</div>
+          <div class="process-step__title">Desarrollo & Pruebas</div>
+          <div class="process-step__desc">Código limpio, rápido y probado en todos los dispositivos y navegadores.</div>
+        </div>
+        <div class="process-step">
+          <div class="process-step__num">Paso 04</div>
+          <div class="process-step__title">Lanzamiento & Soporte</div>
+          <div class="process-step__desc">Tu web en vivo en menos de 7 días. Con soporte continuo para crecer sin límites.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- =========================================================
+       CTA FINAL
+  ========================================================= -->
+  <section class="cta-section" id="contacto">
+    <div class="cta-section__glow"></div>
+    <div class="grid-bg"></div>
+
+    <div class="container cta-section__inner">
+
+      <div class="tag tag--cyan reveal" style="margin: 0 auto 8px;">
+        <i class="ri-chat-1-line"></i> Atención inmediata
+      </div>
+
+      <h2 class="cta-section__title reveal">
+        Hablemos hoy.<br/>
+        <span style="color: var(--green-wa);">Sin compromiso.</span>
+      </h2>
+
+      <p class="cta-section__sub reveal">
+        Cuéntanos qué necesitas y te respondemos en menos de 10 minutos.
+        Cotización gratuita, sin letras pequeñas.
+      </p>
+
+      <a href="https://wa.me/573000000000?text=Hola%20MGrepair%2C%20quiero%20una%20cotizaci%C3%B3n%20gratuita"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="btn-wa-big reveal">
+        <i class="ri-whatsapp-fill"></i>
+        Cotizar por WhatsApp — Gratis
+      </a>
+
+      <p class="cta-section__note reveal">
+        <i class="ri-checkbox-circle-fill"></i>
+        Sin spam · Respuesta en minutos · 100% gratuito
+      </p>
+
+    </div>
+  </section>
+
+
+  <!-- =========================================================
+       FOOTER
+  ========================================================= -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__logo">MG<span>repair</span></div>
+        <div class="footer__links">
+          <a href="#serviciotecnico">Servicio Técnico</a>
+          <a href="#desarrolloweb">Desarrollo Web</a>
+          <a href="#contacto">Contacto</a>
+        </div>
+        <p class="footer__copy">© 2025 MGrepair · Todos los derechos reservados</p>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- =========================================================
+       JAVASCRIPT — mínimo y necesario
+  ========================================================= -->
+  <script>
+    // ── Intersection Observer: reveal on scroll ──────────────
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer  = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            observer.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    revealEls.forEach(el => observer.observe(el));
+
+    // ── Navbar scroll shadow ─────────────────────────────────
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.style.boxShadow = window.scrollY > 40
+        ? '0 8px 32px rgba(0,0,0,0.4)'
+        : 'none';
+    }, { passive: true });
+
+    // ── Mobile hamburger (toggle nav visibility) ─────────────
+    const hamburger = document.getElementById('hamburger');
+    const navList   = document.querySelector('.navbar__nav');
+    hamburger.addEventListener('click', () => {
+      const open = navList.style.display === 'flex';
+      navList.style.display = open ? 'none' : 'flex';
+      navList.style.flexDirection = 'column';
+      navList.style.position      = 'absolute';
+      navList.style.top           = '72px';
+      navList.style.left          = '0';
+      navList.style.right         = '0';
+      navList.style.background    = 'rgba(8,9,12,0.97)';
+      navList.style.padding       = '24px';
+      navList.style.gap           = '20px';
+      navList.style.borderBottom  = '1px solid rgba(255,255,255,0.06)';
+      if (open) navList.style.display = 'none';
+    });
+
+    // Close nav when a link is clicked (mobile)
+    navList.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navList.style.display = 'none';
+      });
+    });
+  </script>
+
+</body>
+</html>
